@@ -1,0 +1,14 @@
+version: "3"
+
+volumes:
+  allure-service:
+    driver: local
+
+services:
+  allure-service:
+    image: genexu/allure-service
+    ports:
+        - "8080:80"
+    volumes:
+        - ./allure-results:/app/allure-results
+
