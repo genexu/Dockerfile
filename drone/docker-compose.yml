@@ -1,0 +1,41 @@
+version: '3'
+# Ref: https://readme.drone.io/server/provider/github
+services:
+  drone-server:
+    image: drone/drone:2
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      drone:
+        aliases:
+          - server
+    environment:
+      DRONE_GITHUB_CLIENT_ID: YOUR_GITHUB_CLIENT_ID
+      DRONE_GITHUB_CLIENT_SECRET: YOUR_GITHU_CLIENT_SECRET
+      DRONE_RPC_SECRET: SHARED_SECRET_GENERATED_FOLLOW_DOCUMENT
+      DRONE_SERVER_HOST: SERVER_HOST:MAY_INCLUDE_PORT
+      DRONE_SERVER_PROTO: SERVER_HOST_PROTO
+    volumes:
+      - /var/lib/drone:/data
+  drone-runner-docker:
+    image: drone/drone-runner-docker:1
+    restart: always
+    depends_on:
+      - drone-server
+    ports:
+      - 3000:3000
+    networks:
+      - drone
+    environment:
+      DRONE_RPC_PROTO: http
+      DRONE_RPC_HOST: server
+      DRONE_RPC_SECRET: SHARED_SECRET_GENERATED_ABROVE
+      DRONE_RUNNER_CAPACITY: 2
+      DRONE_RUNNER_NAME: drone-runner-docker-1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    
+networks:
+  drone:
